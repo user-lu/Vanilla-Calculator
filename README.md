@@ -1,2 +1,3 @@
 # Vanilla-Calculator
-Calculator app made from vanilla JavaScript
+
+Basic calculator app made from vanilla JavaScript
