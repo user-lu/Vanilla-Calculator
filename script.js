@@ -7,6 +7,7 @@ class Calculator {
     this.clear;
   }
 
+  //Button functions
   clear() {
     this.currentOperand = "";
     this.previousOperand = "";
@@ -18,8 +19,13 @@ class Calculator {
   }
 
   appendNumber(number) {
-    if (number === "." && this.currentOperand.includes(".")) return;
-    this.currentOperand = this.currentOperand.toString() + number.toString();
+    // if (number === "." && this.currentOperand.includes(".")) return;
+    // ^^^ introduces a bug (see console for error message)
+    if (this.currentOperand === undefined) {
+      this.currentOperand = number;
+    } else {
+      this.currentOperand = this.currentOperand.toString() + number.toString();
+    }
   }
 
   chooseOperation(operation) {
@@ -58,12 +64,40 @@ class Calculator {
     this.previousOperand = "";
   }
 
+  getDisplayNumber(number) {
+    const stringNumber = number.toString();
+    const integerDigits = parseFloat(stringNumber.split(".")[0]);
+    const decimalDigits = stringNumber.split(".")[1];
+    let integerDisplay;
+    if (isNaN(integerDigits)) {
+      integerDisplay = "";
+    } else {
+      integerDisplay = integerDigits.toLocaleString("en", {
+        maximumFractionDigits: 0,
+      });
+    }
+    if (decimalDigits != null) {
+      return `${integerDisplay}.${decimalDigits}`;
+    } else {
+      return integerDisplay;
+    }
+  }
+
   updateDisplay() {
-    this.currentOperandTextElement.innerText = this.currentOperand;
-    this.previousOperandTextElement.innerText = this.previousOperand;
+    this.currentOperandTextElement.innerText = this.getDisplayNumber(
+      this.currentOperand
+    );
+    if (this.operation != null) {
+      this.previousOperandTextElement.innerText = `${this.getDisplayNumber(
+        this.previousOperand
+      )} ${this.operation}`;
+    } else {
+      this.previousOperandTextElement.innerText = "";
+    }
   }
 }
 
+//Variables
 const numberButtons = document.querySelectorAll("[data-number]");
 const operationButtons = document.querySelectorAll("[data-operation]");
 const equalsButton = document.querySelector("[data-equals]");
@@ -81,6 +115,7 @@ const calculator = new Calculator(
   currentOperandTextElement
 );
 
+//Calling functions
 numberButtons.forEach((button) => {
   button.addEventListener("click", () => {
     calculator.appendNumber(button.innerText);
